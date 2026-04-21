@@ -52,6 +52,8 @@ async function main() {
     }
 
     try {
+      let lastAssistantText = "";
+
       for await (const message of query({ prompt: userInput, options })) {
         if (message.type === "system" && message.subtype === "init") {
           const servers = (message as any).mcp_servers ?? [];
@@ -67,12 +69,14 @@ async function main() {
             .filter((b: any) => b.type === "text")
             .map((b: any) => b.text)
             .join("");
-          if (text) process.stdout.write("\nClaude: " + text + "\n");
+          if (text) lastAssistantText = text;
         }
 
         if (message.type === "result") {
           if ((message as any).subtype === "error_during_execution") {
             console.error("\n[Error durante la ejecución]");
+          } else if (lastAssistantText) {
+            process.stdout.write("\nClaude: " + lastAssistantText + "\n");
           }
         }
       }
