@@ -4,7 +4,7 @@
   "description": "Agente basado en Claude Agent SDK con Supabase MCP",
   "main": "index.ts",
   "scripts": {
-    "start": "ts-node index.ts",
+    "start": "ts-node server.ts",
     "build": "tsc"
   },
   "keywords": [],
@@ -14,7 +14,11 @@
     "@anthropic-ai/claude-agent-sdk": "^0.2.92",
     "@types/node": "^25.5.2",
     "dotenv": "^17.4.1",
+    "express": "^5.2.1",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6"
   }
 }
