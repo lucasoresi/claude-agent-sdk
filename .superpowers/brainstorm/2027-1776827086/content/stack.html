@@ -1,0 +1,43 @@
+<h2>¿Cómo querés agregar la UI?</h2>
+<p class="subtitle">El proyecto actual es un CLI en Node.js/TypeScript puro. Hay 3 formas de agregarle una interfaz web.</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Express + HTML/CSS/JS vanilla</h3>
+      <p>Agregar un servidor Express al mismo <code>index.ts</code>. Sirve una página HTML con el chat. La comunicación usa <strong>Server-Sent Events (SSE)</strong> para el streaming del agente. Sin frameworks extra.</p>
+      <br>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Mínimas dependencias nuevas</li><li>Todo en un solo proceso</li><li>Fácil de entender</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Sin hot-reload en desarrollo</li><li>CSS y JS escritos a mano</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Next.js (React + API Routes)</h3>
+      <p>Nueva app Next.js en una subcarpeta <code>web/</code>. El frontend React consume un API Route que internamente llama al agente SDK. Streaming vía <strong>ReadableStream</strong>.</p>
+      <br>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Idéntico al diseño de IACA (v0)</li><li>Hot-reload, TypeScript nativo</li><li>Componentes reutilizables</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Muchas dependencias nuevas</li><li>Dos procesos en desarrollo</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Vite + React (frontend separado)</h3>
+      <p>Frontend React con Vite (rápido, liviano). Backend: Express en el mismo repo. Más ligero que Next.js pero con la potencia de React.</p>
+      <br>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Más liviano que Next.js</li><li>Build ultra-rápido</li><li>Separación clara frontend/backend</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Requiere configurar ambos puertos</li><li>Más setup inicial que Express puro</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>

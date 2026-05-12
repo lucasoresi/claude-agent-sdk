@@ -1,0 +1,70 @@
+<h2>¿Cómo estructuramos el servidor?</h2>
+<p class="subtitle">Teniendo en cuenta: Express + HTML vanilla, solo web, historial persistente. 3 formas de organizar el código.</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Todo en <code>index.ts</code> + carpeta <code>public/</code></h3>
+      <p>El servidor Express vive en el mismo <code>index.ts</code> (reemplaza el REPL). El frontend es una carpeta <code>public/</code> con archivos estáticos separados.</p>
+      <br>
+      <div style="background:#f8f9fa;padding:12px;border-radius:8px;font-family:monospace;font-size:13px;line-height:1.8">
+        📁 supabase-agent/<br>
+        &nbsp;&nbsp;├── index.ts &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#6b7280"># Express + lógica del agente</span><br>
+        &nbsp;&nbsp;├── public/<br>
+        &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── index.html<br>
+        &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── style.css<br>
+        &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── app.js<br>
+        &nbsp;&nbsp;└── chat-history.json &nbsp;<span style="color:#6b7280"># generado en runtime</span>
+      </div>
+      <br>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Estructura simple y clara</li><li>Mínima refactorización de index.ts</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>index.ts mezcla servidor y lógica</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B ⭐ Recomendada</div>
+    <div class="content">
+      <h3>Separar <code>server.ts</code> + <code>agent.ts</code> + <code>public/</code></h3>
+      <p>El agente SDK se extrae a su propio módulo. El servidor Express queda limpio. Responsabilidades claras.</p>
+      <br>
+      <div style="background:#f8f9fa;padding:12px;border-radius:8px;font-family:monospace;font-size:13px;line-height:1.8">
+        📁 supabase-agent/<br>
+        &nbsp;&nbsp;├── server.ts &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#6b7280"># Express, rutas, SSE</span><br>
+        &nbsp;&nbsp;├── agent.ts &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#6b7280"># lógica del agente SDK</span><br>
+        &nbsp;&nbsp;├── public/<br>
+        &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── index.html<br>
+        &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── style.css<br>
+        &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── app.js<br>
+        &nbsp;&nbsp;└── chat-history.json
+      </div>
+      <br>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Código limpio y mantenible</li><li>Fácil de extender después</li><li>Cada archivo tiene un propósito</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Requiere refactorizar index.ts</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Todo inline en <code>index.ts</code> (HTML como string)</h3>
+      <p>El HTML se sirve como template string dentro de index.ts. Sin carpeta public, todo en un archivo.</p>
+      <br>
+      <div style="background:#f8f9fa;padding:12px;border-radius:8px;font-family:monospace;font-size:13px;line-height:1.8">
+        📁 supabase-agent/<br>
+        &nbsp;&nbsp;├── index.ts &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#6b7280"># todo: servidor + HTML + agente</span><br>
+        &nbsp;&nbsp;└── chat-history.json
+      </div>
+      <br>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Un solo archivo</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Muy difícil de mantener</li><li>HTML mezclado con TypeScript</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>

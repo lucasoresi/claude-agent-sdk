@@ -13,10 +13,11 @@
       <button class="new-chat-btn" id="newChatBtn">+ Nueva conversación</button>
     </header>
 
-    <div class="messages" id="messages"></div>
+    <div class="chat-body">
+      <div class="messages" id="messages"></div>
 
-    <div class="input-area">
-      <div class="input-box">
+      <div class="input-area">
+        <div class="input-box">
         <input
           type="text"
           id="messageInput"
@@ -30,9 +31,11 @@
             <polyline points="5 12 12 5 19 12"></polyline>
           </svg>
         </button>
+        </div>
       </div>
     </div>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

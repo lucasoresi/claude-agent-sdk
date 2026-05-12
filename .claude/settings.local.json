@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Skill(claude-api)"
+      "Skill(claude-api)",
+      "Bash(/home/lucasoresi/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.7/skills/brainstorming/scripts/start-server.sh *)"
     ]
   }
 }

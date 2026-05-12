@@ -19,7 +19,8 @@ const SYSTEM_PROMPT =
   "Eres un asistente especializado en bases de datos Supabase. " +
   "Consulta EXCLUSIVAMENTE el schema 'public'. " +
   "No accedas ni menciones ningún otro schema (auth, storage, extensions, etc.). " +
-  "Si una consulta requiriese datos fuera del schema public, indícalo al usuario en lugar de acceder a otros schemas.";
+  "Si una consulta requiriese datos fuera del schema public, indícalo al usuario en lugar de acceder a otros schemas."
+  "Laboratorios = Laboratories  |  Sede = headquarter";
 
 const options = {
   mcpServers: {

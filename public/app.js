@@ -19,7 +19,7 @@ function addAssistantBubble(text) {
   row.className = 'msg-assistant';
   const bubble = document.createElement('div');
   bubble.className = 'bubble-assistant';
-  bubble.textContent = text;
+  bubble.innerHTML = marked.parse(text);
   row.appendChild(bubble);
   messagesEl.appendChild(row);
   scrollBottom();
@@ -71,6 +71,7 @@ async function send() {
   showTyping();
 
   let bubble = null;
+  let rawText = '';
   let buf = '';
 
   try {
@@ -97,9 +98,10 @@ async function send() {
         if (payload === '[DONE]') break;
         try {
           const chunk = JSON.parse(payload);
+          rawText += chunk;
           hideTyping();
           if (!bubble) bubble = addAssistantBubble('');
-          bubble.textContent += chunk;
+          bubble.innerHTML = marked.parse(rawText);
           scrollBottom();
         } catch {}
       }

@@ -1,0 +1,2 @@
+{"type":"server-started","port":61488,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:61488","screen_dir":"/mnt/c/Users/lucas/Desktop/claude agent sdk - copia/supabase-agent/.superpowers/brainstorm/2027-1776827086/content","state_dir":"/mnt/c/Users/lucas/Desktop/claude agent sdk - copia/supabase-agent/.superpowers/brainstorm/2027-1776827086/state"}
+{"type":"server-stopped","reason":"idle timeout"}

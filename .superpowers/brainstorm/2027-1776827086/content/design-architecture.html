@@ -1,0 +1,68 @@
+<h2>Diseño — Arquitectura y flujo de datos</h2>
+<p class="subtitle">Sección 1 de 2: cómo se comunican las piezas</p>
+
+<div class="section">
+  <h3>Estructura de archivos</h3>
+  <div style="background:#f8f9fa;padding:16px;border-radius:8px;font-family:monospace;font-size:13px;line-height:2">
+    📁 supabase-agent/<br>
+    &nbsp;&nbsp;├── <strong>agent.ts</strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#6b7280"># exporta runAgent(prompt, history) → AsyncGenerator&lt;string&gt;</span><br>
+    &nbsp;&nbsp;├── <strong>server.ts</strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#6b7280"># Express: rutas HTTP + SSE + leer/guardar historial</span><br>
+    &nbsp;&nbsp;├── <strong>public/</strong><br>
+    &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── index.html &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#6b7280"># estructura del chat</span><br>
+    &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── style.css &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#6b7280"># diseño fiel a ui.md</span><br>
+    &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── app.js &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#6b7280"># lógica: enviar mensaje, consumir SSE, renderizar</span><br>
+    &nbsp;&nbsp;├── chat-history.json &nbsp;<span style="color:#6b7280"># generado en runtime (gitignored)</span><br>
+    &nbsp;&nbsp;└── .env
+  </div>
+</div>
+
+<div class="section">
+  <h3>Rutas del servidor (<code>server.ts</code>)</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px">
+      <div style="font-family:monospace;font-weight:600;color:#1d4ed8">GET /</div>
+      <div style="font-size:13px;color:#374151;margin-top:4px">Sirve <code>public/index.html</code></div>
+    </div>
+    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px">
+      <div style="font-family:monospace;font-weight:600;color:#1d4ed8">GET /api/history</div>
+      <div style="font-size:13px;color:#374151;margin-top:4px">Devuelve el historial guardado en JSON</div>
+    </div>
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px">
+      <div style="font-family:monospace;font-weight:600;color:#15803d">POST /api/chat</div>
+      <div style="font-size:13px;color:#374151;margin-top:4px">Recibe <code>{"{message}"}</code>, abre SSE, streama chunks del agente, guarda en historial al terminar</div>
+    </div>
+    <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px">
+      <div style="font-family:monospace;font-weight:600;color:#dc2626">DELETE /api/history</div>
+      <div style="font-size:13px;color:#374151;margin-top:4px">Limpia el historial (botón "Nueva conversación")</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Flujo de un mensaje</h3>
+  <div style="background:#f8f9fa;border-radius:8px;padding:16px;font-size:13px;line-height:2.2">
+    <span style="background:#dbeafe;padding:2px 8px;border-radius:4px;font-weight:600">Browser</span> POST /api/chat { message }
+    &nbsp;→&nbsp;
+    <span style="background:#dcfce7;padding:2px 8px;border-radius:4px;font-weight:600">server.ts</span> abre SSE, llama runAgent()
+    &nbsp;→&nbsp;
+    <span style="background:#fef3c7;padding:2px 8px;border-radius:4px;font-weight:600">agent.ts</span> query() con historial completo
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓ chunks de texto via SSE
+    <br>
+    <span style="background:#dbeafe;padding:2px 8px;border-radius:4px;font-weight:600">Browser</span> renderiza cada chunk en tiempo real
+    <br>
+    <span style="background:#dcfce7;padding:2px 8px;border-radius:4px;font-weight:600">server.ts</span> al terminar → guarda par user/assistant en chat-history.json
+  </div>
+</div>
+
+<div class="section">
+  <h3>Formato del historial (<code>chat-history.json</code>)</h3>
+  <div style="background:#1e1e2e;color:#cdd6f4;padding:14px;border-radius:8px;font-family:monospace;font-size:13px;line-height:1.8">
+    [<br>
+    &nbsp;&nbsp;{ "role": "user", "content": "¿Cuántos usuarios hay?" },<br>
+    &nbsp;&nbsp;{ "role": "assistant", "content": "Hay 142 usuarios registrados." }<br>
+    ]
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top:16px">¿Esta arquitectura te parece bien? Decime en el terminal y pasamos al diseño visual del chat.</p>
