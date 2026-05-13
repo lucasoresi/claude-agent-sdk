@@ -1,42 +1,10 @@
 [
   {
     "role": "user",
-    "content": "top 4 insumos mas utilizados"
+    "content": "cuales son los 3 laboratorios que mas facturaron en noviembre de 2025 ? discrimina por sede en cada laboratorio"
   },
   {
     "role": "assistant",
-    "content": "[Error: el agente no pudo responder]"
-  },
-  {
-    "role": "user",
-    "content": "cuales son los 4 laboratorios que mas facturaron en enero de 2026"
-  },
-  {
-    "role": "assistant",
-    "content": "Aquí están los **4 laboratorios (sedes) que más facturaron en enero de 2026**:\n\n| # | Sede | Total Facturado |\n|---|------|----------------|\n| 🥇 | **Derivantes** | $1.771.721.396 |\n| 🥈 | **Sede San Martin** | $234.479.563 |\n| 🥉 | **Sede Rodriguez** | $136.134.071 |\n| 4️⃣ | **Sede Cronos** | $33.142.114 |\n\n> **Destacado:** *Derivantes* lidera ampliamente con más de **$1.770 millones**, representando casi el **80%** del total facturado entre estas cuatro sedes en enero de 2026."
-  },
-  {
-    "role": "user",
-    "content": "cuales son los 4 laboratorios que mas facturaron en enero de 2026"
-  },
-  {
-    "role": "assistant",
-    "content": "Aquí están los **4 laboratorios (sedes) que más facturaron en enero de 2026**:\n\n| # | Sede | Total Facturado |\n|---|------|----------------|\n| 🥇 | **Derivantes** | $1.771.721.396 |\n| 🥈 | **Sede San Martin** | $234.479.563 |\n| 🥉 | **Sede Rodriguez** | $136.134.071 |\n| 4️⃣ | **Sede Cronos** | $33.142.114 |\n\n> **Destacado:** *Derivantes* lidera ampliamente con más de **$1.770 millones**, representando casi el **80%** del total facturado entre estas cuatro sedes en enero de 2026."
-  },
-  {
-    "role": "user",
-    "content": "cuales son las 5 sedes que mas facturaron en diciembre de 2025"
-  },
-  {
-    "role": "assistant",
-    "content": "Aquí están las **5 sedes que más facturaron en diciembre de 2025**:\n\n| # | Sede | Total Facturado |\n|---|------|----------------|\n| 🥇 | **Derivantes** | $1.765.740.710 |\n| 🥈 | **Sede San Martin** | $257.926.018 |\n| 🥉 | **Sede Rodriguez** | $138.411.806 |\n| 4️⃣ | **Dow Center** | $38.796.016 |\n| 5️⃣ | **Sede Cronos** | $30.686.490 |\n\n> **Destacado:** *Derivantes* vuelve a liderar ampliamente con más de **$1.765 millones**, representando aproximadamente el **79%** del total entre las cinco sedes en diciembre de 2025."
-  },
-  {
-    "role": "user",
-    "content": "cual es el laboratorio que produce mas practicas? cuales son los dias que mas factura ?"
-  },
-  {
-    "role": "assistant",
-    "content": "Aquí están los resultados de ambas consultas:\n\n---\n\n## 🔬 Laboratorio que más prácticas produce\n\n| # | Sede | Total Prácticas |\n|---|------|----------------|\n| 🥇 | **Derivantes** | 6.333.962 |\n| 🥈 | **Sede San Martin** | 1.380.168 |\n| 🥉 | **Sede Rodriguez** | 734.960 |\n| 4 | H. Italiano - Internados | 155.272 |\n| 5 | Sede Cronos | 132.966 |\n\n> **Derivantes** es el laboratorio que produce, por lejos, la mayor cantidad de prácticas — **más de 6,3 millones**, casi **5x más** que la segunda sede (San Martín).\n\n---\n\n## 📅 Días que más facturan (histórico total)\n\n| # | Día | Total Facturado | Total Prácticas |\n|---|-----|----------------|----------------|\n| 🥇 | **Domingo** | $11.979.126.920 | 1.478.098 |\n| 🥈 | **Lunes** | $10.094.079.766 | 1.531.759 |\n| 🥉 | **Sábado** | $8.995.103.404 | 1.452.224 |\n| 4 | Jueves | $8.424.043.987 | 1.261.640 |\n| 5 | Miércoles | $7.999.394.703 | 1.559.048 |\n| 6 | Martes | $7.693.646.841 | 1.080.877 |\n| 7 | **Viernes** | $6.716.351.639 | 997.664 |\n\n> 📌 **Dato curioso:** el **Domingo** es el día de mayor facturación, aunque el **Lunes** y el **Miércoles** tienen más prácticas en volumen. Esto sugiere que los domingos se registran prácticas de mayor valor unitario. El **Viernes** es consistentemente el día de menor actividad."
+    "content": "Aquí está el ranking de los **3 laboratorios que más facturaron en noviembre de 2025**, con el detalle por sede:\n\n---\n\n## 🥇 1. Laboratorio Principal — $2.325.396.394\n\n| Sede | Facturación | % del Lab |\n|------|-------------|-----------|\n| Derivantes | $1.800.693.278 | 77,44% |\n| Sede San Martín | $258.592.631 | 11,12% |\n| Sede Rodríguez | $160.430.245 | 6,90% |\n| Dow Center | $38.844.480 | 1,67% |\n| Sede Cronos | $36.281.938 | 1,56% |\n| Sede Buenos Aires | $18.177.796 | 0,78% |\n| Domicilios | $12.376.026 | 0,53% |\n\n---\n\n## 🥈 2. Darwin — $55.126.730\n\n| Sede | Facturación | % del Lab |\n|------|-------------|-----------|\n| OPDS - Darwin | $27.636.102 | 50,13% |\n| Industrial - Darwin | $27.376.109 | 49,66% |\n| Veterinario - Darwin | $114.519 | 0,21% |\n\n---\n\n## 🥉 3. Laboratorio LESPI — $643.872\n\n| Sede | Facturación | % del Lab |\n|------|-------------|-----------|\n| Laboratorio LESPI | $643.872 | 100,00% |\n\n---\n\n### 📌 Observaciones\n\n- El **Laboratorio Principal** domina ampliamente la facturación, representando el **97,6%** del total del mes.\n- Dentro del Laboratorio Principal, la sede **Derivantes** concentra casi el 80% de su facturación.\n- **H. Italiano** y **Lab. Ferrandez** no registraron facturación en noviembre 2025.\n- **Darwin** tiene sus dos sedes principales (OPDS e Industrial) prácticamente empatadas en facturación, aportando el 99,8% del lab entre ambas."
   }
 ]
