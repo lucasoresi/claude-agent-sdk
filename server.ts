@@ -6,35 +6,45 @@ import * as path from "path";
 
 dotenv.config();
 
-const SUPABASE_ACCESS_TOKEN = process.env.SUPABASE_ACCESS_TOKEN;
+const DATABASE_URL_IACA = process.env.DATABASE_URL_IACA;
+const DATABASE_URL_NANNI = process.env.DATABASE_URL_NANNI;
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
-if (!SUPABASE_ACCESS_TOKEN || !ANTHROPIC_API_KEY) {
-  console.error("ERROR: Faltan variables de entorno: ANTHROPIC_API_KEY y/o SUPABASE_ACCESS_TOKEN.");
+if (!DATABASE_URL_IACA || !DATABASE_URL_NANNI || !ANTHROPIC_API_KEY) {
+  console.error("ERROR: Faltan variables de entorno: ANTHROPIC_API_KEY, DATABASE_URL_IACA y/o DATABASE_URL_NANNI.");
   process.exit(1);
 }
 
-const SYSTEM_PROMPT =
-  "Eres un asistente especializado en bases de datos Supabase. " +
-  "Consulta EXCLUSIVAMENTE el schema 'public'. " +
-  "No accedas ni menciones ningún otro schema (auth, storage, extensions, etc.). " +
-  "Si una consulta requiriese datos fuera del schema public, indícalo al usuario en lugar de acceder a otros schemas."
-  "Laboratorios = Laboratories  |  Sede = headquarter";
+const TENANTS: Record<string, string> = {
+  iaca: DATABASE_URL_IACA,
+  nanni: DATABASE_URL_NANNI,
+};
 
-const options = {
-  mcpServers: {
-    supabase: {
-      type: "http" as const,
-      url: "https://mcp.supabase.com/mcp?project_ref=nfjjlfovpznoipgkugdf&read_only=true",
-      headers: {
-        Authorization: `Bearer ${SUPABASE_ACCESS_TOKEN}`,
+function buildSystemPrompt(): string {
+  return (
+    "Eres un asistente de base de datos. Respondé en el mismo idioma en que te hablen. " +
+    "No uses emojis en tus respuestas. " +
+    "Laboratorios = Laboratories | Sede = headquarter"
+  );
+}
+
+function buildOptions(dbUrl: string) {
+  return {
+    mcpServers: {
+      postgres: {
+        type: "stdio" as const,
+        command: "node",
+        args: [
+          "node_modules/@modelcontextprotocol/server-postgres/dist/index.js",
+          dbUrl,
+        ],
       },
     },
-  },
-  allowedTools: ["mcp__supabase__*"],
-  permissionMode: "bypassPermissions" as const,
-  system: SYSTEM_PROMPT,
-};
+    allowedTools: ["mcp__postgres__*"],
+    permissionMode: "bypassPermissions" as const,
+    allowDangerouslySkipPermissions: true,
+  };
+}
 
 const HISTORY_FILE = path.join(process.cwd(), "chat-history.json");
 
@@ -70,15 +80,19 @@ app.delete("/api/history", (_req, res) => {
 });
 
 app.post("/api/chat", async (req, res) => {
-  const { message } = req.body as { message: string };
+  const { message, tenant } = req.body as { message: string; tenant: string };
   if (!message?.trim()) {
     res.status(400).json({ error: "message required" });
+    return;
+  }
+  const dbUrl = TENANTS[tenant];
+  if (!dbUrl) {
+    res.status(400).json({ error: "tenant inválido" });
     return;
   }
 
   const history = readHistory();
 
-  // Construir prompt con historial de contexto
   let fullPrompt = message;
   if (history.length > 0) {
     const ctx = history
@@ -93,9 +107,10 @@ app.post("/api/chat", async (req, res) => {
   res.flushHeaders();
 
   let fullResponse = "";
+  const requestOptions = { ...buildOptions(dbUrl), systemPrompt: buildSystemPrompt() };
 
   try {
-    for await (const msg of query({ prompt: fullPrompt, options })) {
+    for await (const msg of query({ prompt: fullPrompt, options: requestOptions })) {
       if (msg.type === "assistant") {
         const content = (msg as any).message?.content ?? [];
         const text = content
