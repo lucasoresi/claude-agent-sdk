@@ -193,3 +193,108 @@ body {
 }
 .send-btn svg { width: 18px; height: 18px; }
 .send-btn:disabled { color: #d1d5db; cursor: not-allowed; }
+
+/* Welcome overlay */
+.welcome-overlay {
+  position: fixed;
+  inset: 0;
+  backdrop-filter: blur(20px) saturate(1.5);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5);
+  background: rgba(245, 245, 247, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 36px;
+  z-index: 100;
+}
+
+.welcome-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  text-align: center;
+}
+
+/* User selection cards */
+.user-cards {
+  display: flex;
+  gap: 16px;
+}
+
+.user-card {
+  position: relative;
+  width: 200px;
+  height: 72px;
+  border-radius: 16px;
+  cursor: pointer;
+  overflow: hidden;
+  border: none;
+  padding: 0;
+  background: transparent;
+  transition: transform 0.2s ease;
+}
+.user-card:hover { transform: translateY(-2px); }
+
+.glass {
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.38) 0%,
+    rgba(255, 255, 255, 0.12) 50%,
+    rgba(255, 255, 255, 0.22) 100%
+  );
+  backdrop-filter: blur(28px) saturate(1.6);
+  -webkit-backdrop-filter: blur(28px) saturate(1.6);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.15);
+}
+.glass::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 45%;
+  border-radius: 16px 16px 60% 60%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0) 100%);
+  pointer-events: none;
+}
+
+.card-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 22px;
+  gap: 14px;
+}
+
+.card-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.iaca .card-dot { background: #3b82f6; box-shadow: 0 0 6px rgba(59, 130, 246, 0.6); }
+.nanni .card-dot { background: #10b981; box-shadow: 0 0 6px rgba(16, 185, 129, 0.6); }
+
+.card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.card-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1d1d1f;
+  letter-spacing: -0.2px;
+}
+.card-schema {
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.4);
+  font-family: 'Menlo', 'Consolas', monospace;
+}
