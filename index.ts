@@ -4,11 +4,11 @@ import * as readline from "readline";
 
 dotenv.config();
 
-const SUPABASE_ACCESS_TOKEN = process.env.SUPABASE_ACCESS_TOKEN;
+const DATABASE_URL = process.env.DATABASE_URL_IACA;
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
-if (!SUPABASE_ACCESS_TOKEN || !ANTHROPIC_API_KEY) {
-  console.error("ERROR: Faltan variables de entorno: ANTHROPIC_API_KEY y/o SUPABASE_ACCESS_TOKEN.");
+if (!DATABASE_URL || !ANTHROPIC_API_KEY) {
+  console.error("ERROR: Faltan variables de entorno: ANTHROPIC_API_KEY y/o DATABASE_URL_IACA.");
   process.exit(1);
 }
 
@@ -16,25 +16,25 @@ const rl = readline.createInterface({ input: process.stdin, output: process.stdo
 const askQuestion = (q: string): Promise<string> => new Promise(resolve => rl.question(q, resolve));
 
 const SYSTEM_PROMPT =
-  "Eres un asistente especializado en bases de datos Supabase. " +
-  "Consulta EXCLUSIVAMENTE el schema 'public'. " +
-  "No accedas ni menciones ningún otro schema (auth, storage, extensions, etc.). " +
-  "Si una consulta requiriese datos fuera del schema public, indícalo al usuario en lugar de acceder a otros schemas."
-  "Laboratorios = Laboratories  |  Sede = headquarter";
+  "Eres un asistente de base de datos. Respondé en el mismo idioma en que te hablen. " +
+  "No uses emojis en tus respuestas. " +
+  "Laboratorios = Laboratories | Sede = headquarter";
 
 const options = {
   mcpServers: {
-    supabase: {
-      type: "http" as const,
-      url: "https://mcp.supabase.com/mcp?project_ref=nfjjlfovpznoipgkugdf&read_only=true",
-      headers: {
-        "Authorization": `Bearer ${SUPABASE_ACCESS_TOKEN}`
-      }
-    }
+    postgres: {
+      type: "stdio" as const,
+      command: "node",
+      args: [
+        "node_modules/@modelcontextprotocol/server-postgres/dist/index.js",
+        DATABASE_URL,
+      ],
+    },
   },
-  allowedTools: ["mcp__supabase__*"],
+  allowedTools: ["mcp__postgres__*"],
   permissionMode: "bypassPermissions" as const,
-  system: SYSTEM_PROMPT
+  allowDangerouslySkipPermissions: true,
+  systemPrompt: SYSTEM_PROMPT,
 };
 
 async function main() {
