@@ -46,23 +46,25 @@ function buildOptions(dbUrl: string) {
   };
 }
 
-const HISTORY_FILE = path.join(process.cwd(), "chat-history.json");
-
 type Message = { role: "user" | "assistant"; content: string };
 
-function readHistory(): Message[] {
+function historyFile(tenant: string): string {
+  return path.join(process.cwd(), `chat-history-${tenant}.json`);
+}
+
+function readHistory(tenant: string): Message[] {
   try {
-    return JSON.parse(fs.readFileSync(HISTORY_FILE, "utf-8"));
+    return JSON.parse(fs.readFileSync(historyFile(tenant), "utf-8"));
   } catch {
     return [];
   }
 }
 
-function writeHistory(history: Message[]): void {
-  fs.writeFileSync(HISTORY_FILE, JSON.stringify(history, null, 2));
+function writeHistory(tenant: string, history: Message[]): void {
+  fs.writeFileSync(historyFile(tenant), JSON.stringify(history, null, 2));
 }
 
-writeHistory([]);
+for (const tenant of Object.keys(TENANTS)) writeHistory(tenant, []);
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
@@ -70,12 +72,15 @@ const PORT = Number(process.env.PORT) || 3000;
 app.use(express.json());
 app.use(express.static(path.join(process.cwd(), "public")));
 
-app.get("/api/history", (_req, res) => {
-  res.json(readHistory());
+app.get("/api/history", (req, res) => {
+  const tenant = req.query.tenant as string | undefined;
+  if (!tenant || !TENANTS[tenant]) { res.json([]); return; }
+  res.json(readHistory(tenant));
 });
 
-app.delete("/api/history", (_req, res) => {
-  writeHistory([]);
+app.delete("/api/history", (req, res) => {
+  const tenant = req.query.tenant as string | undefined;
+  if (tenant && TENANTS[tenant]) writeHistory(tenant, []);
   res.json({ ok: true });
 });
 
@@ -91,7 +96,7 @@ app.post("/api/chat", async (req, res) => {
     return;
   }
 
-  const history = readHistory();
+  const history = readHistory(tenant);
 
   let fullPrompt = message;
   if (history.length > 0) {
@@ -129,7 +134,7 @@ app.post("/api/chat", async (req, res) => {
     fullResponse = "[Error: el agente no pudo responder]";
   }
 
-  writeHistory([
+  writeHistory(tenant, [
     ...history,
     { role: "user", content: message },
     { role: "assistant", content: fullResponse },

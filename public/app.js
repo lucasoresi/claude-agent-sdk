@@ -17,7 +17,7 @@ function selectTenant(tenant) {
 }
 
 async function switchUser() {
-  await fetch('/api/history', { method: 'DELETE' });
+  await fetch(`/api/history?tenant=${currentTenant}`, { method: 'DELETE' });
   messagesEl.innerHTML = '';
   currentTenant = null;
   chatAppEl.style.display = 'none';
@@ -75,7 +75,7 @@ function setEnabled(on) {
 
 async function send() {
   const text = inputEl.value.trim();
-  if (!text) return;
+  if (!text || !currentTenant) return;
 
   inputEl.value = '';
   setEnabled(false);
@@ -134,7 +134,7 @@ document.querySelectorAll('.user-card').forEach(btn => {
 switchUserBtn.addEventListener('click', switchUser);
 
 newChatBtn.addEventListener('click', async () => {
-  await fetch('/api/history', { method: 'DELETE' });
+  await fetch(`/api/history?tenant=${currentTenant}`, { method: 'DELETE' });
   messagesEl.innerHTML = '';
   inputEl.focus();
 });
