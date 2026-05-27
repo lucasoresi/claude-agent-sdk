@@ -1,0 +1,18 @@
+[
+  {
+    "role": "user",
+    "content": "cuantas tablas tiene el schema public"
+  },
+  {
+    "role": "assistant",
+    "content": "El schema `public` tiene **0 tablas** de tipo BASE TABLE.\n\nSi queres, puedo revisar si hay vistas, otros schemas disponibles, o verificar que la conexion este apuntando a la base de datos correcta."
+  },
+  {
+    "role": "user",
+    "content": "cual es la practica que mas facturo en enero de 2026"
+  },
+  {
+    "role": "assistant",
+    "content": "La practica que mas facturo en enero de 2026 fue **VITAMINA D 25-HIDROXI**, con un total facturado de **$42.109.386,68**.\n\nLe siguen en el ranking:\n\n| Puesto | Practica | Total Facturado |\n|--------|----------|----------------|\n| 1 | VITAMINA D 25-HIDROXI | $42.109.386,68 |\n| 2 | ACTO BIOQUIMICO | $30.777.079,33 |\n| 3 | TSH (TIROTROFINA) | $29.025.981,03 |\n| 4 | HEMOGRAMA | $21.186.431,67 |\n| 5 | PERFIL HEPATOGRAMA | $19.004.819,25 |"
+  }
+]
