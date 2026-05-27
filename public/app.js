@@ -2,6 +2,27 @@ const messagesEl = document.getElementById('messages');
 const inputEl = document.getElementById('messageInput');
 const sendBtn = document.getElementById('sendBtn');
 const newChatBtn = document.getElementById('newChatBtn');
+const switchUserBtn = document.getElementById('switchUserBtn');
+const welcomeEl = document.getElementById('welcome');
+const chatAppEl = document.getElementById('chatApp');
+
+let currentTenant = null;
+
+function selectTenant(tenant) {
+  currentTenant = tenant;
+  document.getElementById('tenantLabel').textContent = tenant;
+  welcomeEl.style.display = 'none';
+  chatAppEl.style.display = 'flex';
+  inputEl.focus();
+}
+
+async function switchUser() {
+  await fetch('/api/history', { method: 'DELETE' });
+  messagesEl.innerHTML = '';
+  currentTenant = null;
+  chatAppEl.style.display = 'none';
+  welcomeEl.style.display = 'flex';
+}
 
 function addUserBubble(text) {
   const row = document.createElement('div');
@@ -52,15 +73,6 @@ function setEnabled(on) {
   sendBtn.disabled = !on;
 }
 
-async function loadHistory() {
-  const res = await fetch('/api/history');
-  const history = await res.json();
-  for (const msg of history) {
-    if (msg.role === 'user') addUserBubble(msg.content);
-    else addAssistantBubble(msg.content);
-  }
-}
-
 async function send() {
   const text = inputEl.value.trim();
   if (!text) return;
@@ -78,7 +90,7 @@ async function send() {
     const res = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: text }),
+      body: JSON.stringify({ message: text, tenant: currentTenant }),
     });
 
     const reader = res.body.getReader();
@@ -115,6 +127,12 @@ async function send() {
   inputEl.focus();
 }
 
+document.querySelectorAll('.user-card').forEach(btn => {
+  btn.addEventListener('click', () => selectTenant(btn.dataset.tenant));
+});
+
+switchUserBtn.addEventListener('click', switchUser);
+
 newChatBtn.addEventListener('click', async () => {
   await fetch('/api/history', { method: 'DELETE' });
   messagesEl.innerHTML = '';
@@ -125,6 +143,3 @@ sendBtn.addEventListener('click', send);
 inputEl.addEventListener('keydown', e => {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
 });
-
-loadHistory();
-inputEl.focus();
