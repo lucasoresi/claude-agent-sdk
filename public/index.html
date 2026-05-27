@@ -7,10 +7,39 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="chat-app">
+  <div id="welcome" class="welcome-overlay">
+    <p class="welcome-subtitle">Seleccioná tu usuario para comenzar</p>
+    <div class="user-cards">
+      <button class="user-card iaca" data-tenant="iaca">
+        <div class="glass"></div>
+        <div class="card-content">
+          <div class="card-dot"></div>
+          <div class="card-info">
+            <span class="card-name">iaca</span>
+            <span class="card-schema">public</span>
+          </div>
+        </div>
+      </button>
+      <button class="user-card nanni" data-tenant="nanni">
+        <div class="glass"></div>
+        <div class="card-content">
+          <div class="card-dot"></div>
+          <div class="card-info">
+            <span class="card-name">nanni</span>
+            <span class="card-schema">tenant_nanni</span>
+          </div>
+        </div>
+      </button>
+    </div>
+  </div>
+
+  <div class="chat-app" id="chatApp" style="display:none">
     <header class="chat-header">
-      <span class="chat-title">Agente Supabase</span>
-      <button class="new-chat-btn" id="newChatBtn">+ Nueva conversación</button>
+      <span class="chat-title">Agente Supabase — <strong id="tenantLabel"></strong></span>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button class="new-chat-btn" id="switchUserBtn">Cambiar usuario</button>
+        <button class="new-chat-btn" id="newChatBtn">+ Nueva conversación</button>
+      </div>
     </header>
 
     <div class="chat-body">
@@ -18,23 +47,24 @@
 
       <div class="input-area">
         <div class="input-box">
-        <input
-          type="text"
-          id="messageInput"
-          placeholder="Escribe tu mensaje..."
-          autocomplete="off"
-        />
-        <button class="send-btn" id="sendBtn" aria-label="Enviar">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-               stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="12" y1="19" x2="12" y2="5"></line>
-            <polyline points="5 12 12 5 19 12"></polyline>
-          </svg>
-        </button>
+          <input
+            type="text"
+            id="messageInput"
+            placeholder="Escribe tu mensaje..."
+            autocomplete="off"
+          />
+          <button class="send-btn" id="sendBtn" aria-label="Enviar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="19" x2="12" y2="5"></line>
+              <polyline points="5 12 12 5 19 12"></polyline>
+            </svg>
+          </button>
         </div>
       </div>
     </div>
   </div>
+
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="app.js"></script>
 </body>
