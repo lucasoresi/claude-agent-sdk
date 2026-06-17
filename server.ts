@@ -111,19 +111,24 @@ app.post("/api/chat", async (req, res) => {
   res.flushHeaders();
 
   let fullResponse = FRIENDLY_ERROR;
+  let sawResult = false;
   const requestOptions = { ...buildOptions(dbUrl), systemPrompt: buildSystemPrompt() };
 
   try {
-    // Enfoque A: ignorar todos los mensajes intermedios (assistant, tool_use,
-    // tool_result) y quedarnos solo con el texto final del mensaje `result`.
+    // Emit only the final result message; every intermediate message (assistant narration, tool calls, tool results) is dropped so the client never sees them.
     for await (const msg of query({ prompt: fullPrompt, options: requestOptions })) {
       const final = finalAnswerFor(msg as any);
-      if (final !== null) fullResponse = final;
+      if (final !== null) {
+        fullResponse = final;
+        sawResult = true;
+      }
     }
   } catch (err) {
     console.error("[agent error]", err);
     fullResponse = FRIENDLY_ERROR;
   }
+
+  if (!sawResult) console.warn("[agent] stream ended without a result message");
 
   res.write(`data: ${JSON.stringify(fullResponse)}\n\n`);
 

@@ -27,3 +27,8 @@ test("devuelve mensaje amable en result de error", () => {
     FRIENDLY_ERROR
   );
 });
+
+test("devuelve mensaje amable si el result es vacío o solo espacios", () => {
+  assert.equal(finalAnswerFor({ type: "result", subtype: "success", result: "" }), FRIENDLY_ERROR);
+  assert.equal(finalAnswerFor({ type: "result", subtype: "success", result: "   " }), FRIENDLY_ERROR);
+});
