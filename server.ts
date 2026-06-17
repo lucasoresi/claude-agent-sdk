@@ -27,6 +27,10 @@ function buildSystemPrompt(): string {
   return fs.readFileSync(PROMPT_FILE, "utf-8");
 }
 
+// Skills de dominio (archivos en .claude/skills/<nombre>/SKILL.md).
+// Claude las carga sola cuando la consulta coincide con su `description`.
+const DOMAIN_SKILLS = ["facturacion", "obras-sociales", "practicas", "costos-margenes"];
+
 function buildOptions(dbUrl: string) {
   return {
     mcpServers: {
@@ -39,31 +43,15 @@ function buildOptions(dbUrl: string) {
         ],
       },
     },
-    allowedTools: ["mcp__postgres__*"],
+    // "Skill" habilita la carga de las skills de dominio; el resto es la DB.
+    allowedTools: ["mcp__postgres__*", "Skill"],
+    // Carga skills (y CLAUDE.md) del proyecto; necesario para descubrir .claude/skills.
+    settingSources: ["project"] as ("user" | "project" | "local")[],
+    skills: DOMAIN_SKILLS,
     permissionMode: "bypassPermissions" as const,
     allowDangerouslySkipPermissions: true,
   };
 }
-
-type Message = { role: "user" | "assistant"; content: string };
-
-function historyFile(tenant: string): string {
-  return path.join(process.cwd(), `chat-history-${tenant}.json`);
-}
-
-function readHistory(tenant: string): Message[] {
-  try {
-    return JSON.parse(fs.readFileSync(historyFile(tenant), "utf-8"));
-  } catch {
-    return [];
-  }
-}
-
-function writeHistory(tenant: string, history: Message[]): void {
-  fs.writeFileSync(historyFile(tenant), JSON.stringify(history, null, 2));
-}
-
-for (const tenant of Object.keys(TENANTS)) writeHistory(tenant, []);
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
@@ -71,20 +59,12 @@ const PORT = Number(process.env.PORT) || 3000;
 app.use(express.json());
 app.use(express.static(path.join(process.cwd(), "public")));
 
-app.get("/api/history", (req, res) => {
-  const tenant = req.query.tenant as string | undefined;
-  if (!tenant || !TENANTS[tenant]) { res.json([]); return; }
-  res.json(readHistory(tenant));
-});
-
-app.delete("/api/history", (req, res) => {
-  const tenant = req.query.tenant as string | undefined;
-  if (tenant && TENANTS[tenant]) writeHistory(tenant, []);
-  res.json({ ok: true });
-});
-
 app.post("/api/chat", async (req, res) => {
-  const { message, tenant } = req.body as { message: string; tenant: string };
+  const { message, tenant, sessionId } = req.body as {
+    message: string;
+    tenant: string;
+    sessionId?: string;
+  };
   if (!message?.trim()) {
     res.status(400).json({ error: "message required" });
     return;
@@ -95,16 +75,6 @@ app.post("/api/chat", async (req, res) => {
     return;
   }
 
-  const history = readHistory(tenant);
-
-  let fullPrompt = message;
-  if (history.length > 0) {
-    const ctx = history
-      .map((m) => `${m.role === "user" ? "Usuario" : "Asistente"}: ${m.content}`)
-      .join("\n");
-    fullPrompt = `[Conversación previa]\n${ctx}\n\n[Mensaje actual]\nUsuario: ${message}`;
-  }
-
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
@@ -112,11 +82,22 @@ app.post("/api/chat", async (req, res) => {
 
   let fullResponse = FRIENDLY_ERROR;
   let sawResult = false;
-  const requestOptions = { ...buildOptions(dbUrl), systemPrompt: buildSystemPrompt() };
+  let currentSessionId: string | undefined = sessionId;
+
+  // Official session management: resume the prior session if the client sent its ID.
+  const requestOptions = {
+    ...buildOptions(dbUrl),
+    systemPrompt: buildSystemPrompt(),
+    ...(sessionId ? { resume: sessionId } : {}),
+  };
 
   try {
     // Emit only the final result message; every intermediate message (assistant narration, tool calls, tool results) is dropped so the client never sees them.
-    for await (const msg of query({ prompt: fullPrompt, options: requestOptions })) {
+    for await (const msg of query({ prompt: message, options: requestOptions })) {
+      // Capture/refresh the session id from any message that carries it.
+      if (msg && typeof msg === "object" && "session_id" in msg) {
+        currentSessionId = (msg as { session_id: string }).session_id;
+      }
       const final = finalAnswerFor(msg as any);
       if (final !== null) {
         fullResponse = final;
@@ -130,14 +111,10 @@ app.post("/api/chat", async (req, res) => {
 
   if (!sawResult) console.warn("[agent] stream ended without a result message");
 
-  res.write(`data: ${JSON.stringify(fullResponse)}\n\n`);
-
-  writeHistory(tenant, [
-    ...history,
-    { role: "user", content: message },
-    { role: "assistant", content: fullResponse },
-  ]);
-
+  if (currentSessionId) {
+    res.write(`data: ${JSON.stringify({ type: "session", sessionId: currentSessionId })}\n\n`);
+  }
+  res.write(`data: ${JSON.stringify({ type: "answer", text: fullResponse })}\n\n`);
   res.write(`data: [DONE]\n\n`);
   res.end();
 });

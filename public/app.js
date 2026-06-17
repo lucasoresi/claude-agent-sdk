@@ -7,19 +7,21 @@ const welcomeEl = document.getElementById('welcome');
 const chatAppEl = document.getElementById('chatApp');
 
 let currentTenant = null;
+let sessionId = null;
 
 function selectTenant(tenant) {
   currentTenant = tenant;
+  sessionId = null;
   document.getElementById('tenantLabel').textContent = tenant;
   welcomeEl.style.display = 'none';
   chatAppEl.style.display = 'flex';
   inputEl.focus();
 }
 
-async function switchUser() {
-  await fetch(`/api/history?tenant=${currentTenant}`, { method: 'DELETE' });
+function switchUser() {
   messagesEl.innerHTML = '';
   currentTenant = null;
+  sessionId = null;
   chatAppEl.style.display = 'none';
   welcomeEl.style.display = 'flex';
 }
@@ -90,7 +92,7 @@ async function send() {
     const res = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: text, tenant: currentTenant }),
+      body: JSON.stringify({ message: text, tenant: currentTenant, sessionId }),
     });
 
     const reader = res.body.getReader();
@@ -109,12 +111,18 @@ async function send() {
         const payload = line.slice(6);
         if (payload === '[DONE]') break;
         try {
-          const chunk = JSON.parse(payload);
-          rawText += chunk;
-          hideTyping();
-          if (!bubble) bubble = addAssistantBubble('');
-          bubble.innerHTML = marked.parse(rawText);
-          scrollBottom();
+          const msg = JSON.parse(payload);
+          if (msg && msg.type === 'session') {
+            sessionId = msg.sessionId;
+            continue;
+          }
+          if (msg && msg.type === 'answer') {
+            rawText = msg.text;
+            hideTyping();
+            if (!bubble) bubble = addAssistantBubble('');
+            bubble.innerHTML = marked.parse(rawText);
+            scrollBottom();
+          }
         } catch {}
       }
     }
@@ -133,8 +141,7 @@ document.querySelectorAll('.user-card').forEach(btn => {
 
 switchUserBtn.addEventListener('click', switchUser);
 
-newChatBtn.addEventListener('click', async () => {
-  await fetch(`/api/history?tenant=${currentTenant}`, { method: 'DELETE' });
+newChatBtn.addEventListener('click', () => {
   messagesEl.innerHTML = '';
   inputEl.focus();
 });
