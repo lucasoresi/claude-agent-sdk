@@ -20,12 +20,10 @@ const TENANTS: Record<string, string> = {
   nanni: DATABASE_URL_NANNI,
 };
 
+const PROMPT_FILE = path.join(process.cwd(), "prompt.md");
+
 function buildSystemPrompt(): string {
-  return (
-    "Eres un asistente de base de datos. Respondé en el mismo idioma en que te hablen. " +
-    "No uses emojis en tus respuestas. " +
-    "Laboratorios = Laboratories | Sede = headquarter"
-  );
+  return fs.readFileSync(PROMPT_FILE, "utf-8");
 }
 
 function buildOptions(dbUrl: string) {
