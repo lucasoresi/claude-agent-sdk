@@ -1,4 +1,5 @@
 import { query } from "@anthropic-ai/claude-agent-sdk";
+import { finalAnswerFor, FRIENDLY_ERROR } from "./agent-output";
 import * as dotenv from "dotenv";
 import express from "express";
 import * as fs from "fs";
@@ -109,28 +110,22 @@ app.post("/api/chat", async (req, res) => {
   res.setHeader("Connection", "keep-alive");
   res.flushHeaders();
 
-  let fullResponse = "";
+  let fullResponse = FRIENDLY_ERROR;
   const requestOptions = { ...buildOptions(dbUrl), systemPrompt: buildSystemPrompt() };
 
   try {
+    // Enfoque A: ignorar todos los mensajes intermedios (assistant, tool_use,
+    // tool_result) y quedarnos solo con el texto final del mensaje `result`.
     for await (const msg of query({ prompt: fullPrompt, options: requestOptions })) {
-      if (msg.type === "assistant") {
-        const content = (msg as any).message?.content ?? [];
-        const text = content
-          .filter((b: any) => b.type === "text")
-          .map((b: any) => b.text)
-          .join("");
-        if (text) {
-          fullResponse = text;
-          res.write(`data: ${JSON.stringify(text)}\n\n`);
-        }
-      }
+      const final = finalAnswerFor(msg as any);
+      if (final !== null) fullResponse = final;
     }
   } catch (err) {
     console.error("[agent error]", err);
-    res.write(`data: ${JSON.stringify("[Error: el agente no pudo responder]")}\n\n`);
-    fullResponse = "[Error: el agente no pudo responder]";
+    fullResponse = FRIENDLY_ERROR;
   }
+
+  res.write(`data: ${JSON.stringify(fullResponse)}\n\n`);
 
   writeHistory(tenant, [
     ...history,
