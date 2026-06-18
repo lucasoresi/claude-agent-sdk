@@ -29,7 +29,16 @@ function buildSystemPrompt(): string {
 
 // Skills de dominio (archivos en .claude/skills/<nombre>/SKILL.md).
 // Claude las carga sola cuando la consulta coincide con su `description`.
-const DOMAIN_SKILLS = ["facturacion", "obras-sociales", "practicas", "costos-margenes"];
+const DOMAIN_SKILLS = [
+  "facturacion",
+  "obras-sociales",
+  "practicas",
+  "costos-margenes",
+  "derivaciones",
+  "insumos-stock",
+  "historico-precios",
+  "precios-externos",
+];
 
 function buildOptions(dbUrl: string) {
   return {
